@@ -1,0 +1,158 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: #f9f9f9 !important;
+}
+
+.card-custom {
+  border-radius: 2 !important;
+  border: none !important;
+  background-color: white;
+}
+
+.card-shadow-custom {
+  border-radius: 2 !important;
+  border: none !important;
+  background-color: white;
+  box-shadow: -2px -2px 4px rgba(255, 255, 255, 0.5),
+    2px 2px 4px rgba(70, 70, 70, 0.12);
+}
+
+.card-wrapper {
+  margin-top: 2rem;
+}
+
+.card-wrapper > div:last-child {
+  margin-right: 2rem;
+}
+
+.card-wrapper > div:first-child {
+  margin-left: 2rem;
+}
+
+.container-custom {
+  margin: 0;
+  width: 100%;
+}
+
+.centered-bold-text {
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.lead {
+  font-size: 18px !important;
+}
+
+.link-item-main:link {
+  font-weight: 800;
+}
+
+.link-item-main:hover {
+  color: black;
+}
+
+.link-item-main:active {
+  color: black;
+}
+
+.link-item:link {
+  font-weight: 500;
+}
+
+.link-item:hover {
+  color: black;
+}
+
+.link-item:active {
+  color: black;
+}
+
+.nav {
+  top: 0px;
+  background-color: transparent;
+  backdrop-filter: blur(10px);
+  opacity: 95%;
+  transition: 0.4s;
+  z-index: 1;
+}
+
+.nav:hover {
+  top: 0px;
+  background-color: #ffffff80;
+  backdrop-filter: blur(10px);
+  opacity: 95%;
+  box-shadow: -2px -2px 4px rgba(255, 255, 255, 0.5),
+    2px 2px 4px rgba(70, 70, 70, 0.12);
+  z-index: 1;
+}
+
+.nav ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+}
+
+.nav a {
+  color: inherit;
+  text-decoration: none;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0.25rem;
+}
+
+.navbar-scroll {
+  top: 0px;
+  background-color: #ffffff80;
+  backdrop-filter: blur(10px);
+  opacity: 95%;
+  box-shadow: -2px -2px 4px rgba(255, 255, 255, 0.5),
+    2px 2px 4px rgba(70, 70, 70, 0.12);
+  z-index: 1;
+}
+
+.news-wrapper {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.news-wrapper > div:last-child {
+  margin-right: 10%;
+}
+
+.news-wrapper > div:first-child {
+  margin-left: 10%;
+}
+
+.subcard-wrapper-custom {
+  border-radius: 0 !important;
+  border: none !important;
+  background-color: white;
+}
+
+.subcard-custom {
+  background-color: white !important;
+  border-radius: 2 !important;
+  border-color: #f9f9f9 !important;
+  box-shadow: -2px -2px 4px rgba(255, 255, 255, 0.5),
+    2px 2px 4px rgba(70, 70, 70, 0.12);
+  margin: 1rem;
+}
+
+.table-cell-center {
+  vertical-align: middle !important;
+}
+
+.table-cell-center-horizontal {
+  text-align: center;
+}
