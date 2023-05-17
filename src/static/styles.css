@@ -7,6 +7,13 @@ body {
   background-color: #f9f9f9 !important;
 }
 
+.card-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40vh; 
+}
+
 .card-custom {
   border-radius: 2 !important;
   border: none !important;
@@ -17,8 +24,8 @@ body {
   border-radius: 2 !important;
   border: none !important;
   background-color: white;
-  box-shadow: -2px -2px 4px rgba(255, 255, 255, 0.5),
-    2px 2px 4px rgba(70, 70, 70, 0.12);
+  box-shadow: -4px -4px 8px rgba(255, 255, 255, 0.5),
+    4px 4px 8px rgba(70, 70, 70, 0.12);
 }
 
 .card-wrapper {
@@ -134,10 +141,16 @@ body {
   margin-left: 10%;
 }
 
+.small-text {
+  font-size: 13px;
+  color: gray;
+}
+
 .subcard-wrapper-custom {
   border-radius: 0 !important;
   border: none !important;
   background-color: white;
+  height: 100%;
 }
 
 .subcard-custom {
@@ -146,7 +159,13 @@ body {
   border-color: #f9f9f9 !important;
   box-shadow: -2px -2px 4px rgba(255, 255, 255, 0.5),
     2px 2px 4px rgba(70, 70, 70, 0.12);
-  margin: 1rem;
+  margin: 0.5rem;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.subcard-custom:hover {
+  background-color: #f9f9f9 !important;
 }
 
 .table-cell-center {
