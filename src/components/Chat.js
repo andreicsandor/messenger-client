@@ -81,14 +81,31 @@ const ChatView = () => {
     const fetchContacts = async () => {
       try {
         const response = await api.get("/api/contacts");
-        setContacts(response.data);
+        const contacts = response.data.filter(contact => contact.username !== user);
+        setContacts(contacts);
       } catch (error) {
         console.error("An error occurred while fetching contacts:", error);
       }
     };
-
+  
     fetchContacts();
-  }, []);
+  }, [user]);
+
+  useEffect(() => {
+    const fetchActiveContacts = async () => {
+      try {
+        const response = await api.get("/api/active-contacts");
+        const activeContacts = response.data;
+        setActiveContacts(activeContacts);
+      } catch (error) {
+        console.error("An error occurred while fetching active contacts:", error);
+      }
+    };
+  
+    if (contacts.length > 0) {
+      fetchActiveContacts();
+    }
+  }, [contacts]);  
 
   // Sets the default data input
   const [input, setInput] = useState({
