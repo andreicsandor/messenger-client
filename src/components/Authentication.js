@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
+  connectToBootServer,
+  disconnectFromServer,
+  sendNotificationToServer,
+} from "./Server";
+import api from "./Api";
+import Cookies from "js-cookie";
+import NotificationDTO from "../dto/NotificationDTO";
+
+import "bootstrap/dist/css/bootstrap.min.css";
+import "../static/styles.css";
+import {
   Button,
   Container,
   Col,
@@ -9,8 +20,6 @@ import {
   Input,
   Row,
 } from "reactstrap";
-import api from "./Api";
-import Cookies from "js-cookie";
 
 const LoginView = () => {
   const [username, setUsername] = useState("");
@@ -19,18 +28,21 @@ const LoginView = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const loggedInUser = Cookies.get("loggedInUser");
+  // Show error in console
+  const onError = (err) => {
+    console.log(err);
+  };
 
-    if (loggedInUser)
+  useEffect(() => {
+    const user = Cookies.get("loggedInUser");
+
+    if (user)
       navigate("/chats");
 
   }, [navigate]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(username);
-    console.log(password);
     try {
       const response = await api.post("/api/login", {
         username: username,
@@ -38,6 +50,15 @@ const LoginView = () => {
       });
       if (response.status === 200) {
         Cookies.set("loggedInUser", response.data.username);
+
+        // Connect to server when component mounts
+        connectToBootServer(response.data.username, onError);
+
+        // Prepare the notification data transfer object
+        const notificationOnline = new NotificationDTO("ONLINE", response.data.username, "is online");
+        
+        // Send the online status notification to the server
+        sendNotificationToServer(notificationOnline);
 
         navigate("/chat");
       } else {
@@ -115,9 +136,15 @@ const LogoutView = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const loggedInUser = Cookies.get("loggedInUser");
+    const user = Cookies.get("loggedInUser");
 
-    if (loggedInUser) {
+    if (user) {
+      // Prepare the notification data transfer object
+      const notificationOffline = new NotificationDTO("OFFLINE", user, "is offline");
+      // Send the online status notification to the server
+      sendNotificationToServer(notificationOffline);
+      disconnectFromServer();
+
       // Remove session cookies
       Cookies.remove("loggedInUser");
 

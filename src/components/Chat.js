@@ -8,6 +8,7 @@ import {
 import api from "./Api";
 import Cookies from "js-cookie";
 import MessageDTO from "../dto/MessageDTO";
+import NotificationDTO from "../dto/NotificationDTO";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../static/styles.css";
@@ -25,7 +26,8 @@ import {
 const ChatView = () => {
   const [user, setUser] = useState(null);
   const [contacts, setContacts] = useState([]);
-  const [activeContact, setActiveContact] = useState(null);
+  const [activeContacts, setActiveContacts] = useState([]);
+  const [chatContact, setChatContact] = useState(null);
   const [messages, setMessages] = useState([]);
   const [notifications, setNotifications] = useState([]);
 
@@ -37,18 +39,25 @@ const ChatView = () => {
   };
 
   const onMessage = (response) => {
-    console.log(response);
     var responseData = JSON.parse(response.body);
     setMessages((prevMessages) => [...prevMessages, responseData]);
   };
 
   const onNotification = (response) => {
-    console.log(response);
     var responseData = JSON.parse(response.body);
-    setNotifications((prevNotifications) => [
-      ...prevNotifications,
-      responseData,
-    ]);
+
+    // Handle the online/offline type of notification
+    if (responseData.type === "ONLINE") {
+      // Add the user to the list of online users
+      if (!activeContacts.includes(responseData.sender)) {
+        setActiveContacts([...activeContacts, responseData.sender]);
+      }
+    } else if (responseData.type === "OFFLINE") {
+      // Remove the user from the list of online users
+      setActiveContacts(
+        activeContacts.filter((user) => user !== responseData.sender)
+      );
+    }
   };
 
   // Gets the logged-in user details from cookies
@@ -60,10 +69,10 @@ const ChatView = () => {
     setUser(user);
 
     // Connect to server when component mounts
-    connectToServer(user, onMessage, onNotification, onError);
+    connectToServer(user, onNotification, onMessage, onError);
 
     return () => {
-      // Disconenct from server
+      // Disconnect from server
       disconnectFromServer();
     };
   }, [navigate]);
@@ -139,55 +148,60 @@ const ChatView = () => {
       </div>
 
       <Row className="m-5">
-  <Col sm="4">
-    <Card
-      body
-      className="card-custom"
-      style={{ height: "80vh" }}
-    >
-      <CardTitle tag="h5">Messenger</CardTitle>
-      <CardSubtitle className="mb-3 text-muted" tag="h6">
-        Contacts
-      </CardSubtitle>
-      <div
-        className="subcard-wrapper-custom"
-        style={{ overflowY: "auto", maxHeight: "80vh" }}
-      >
-        <Col sm="12">
-          {contacts.map((contact) => (
-            <Card body className="subcard-custom mx-1 my-2" onClick={() => setActiveContact(contact)}>
-              <CardTitle className="mb-1" tag="h6">
-                {contact.firstName} {contact.lastName}
-              </CardTitle>
-              <CardText className="small-text">
-                {contact.username}
-              </CardText>
-            </Card>
-          ))}
+        <Col sm="4">
+          <Card body className="card-custom" style={{ height: "80vh" }}>
+            <CardTitle tag="h5">Messenger</CardTitle>
+            <CardSubtitle className="mb-3 text-muted" tag="h6">
+              Contacts
+            </CardSubtitle>
+            <div
+              className="subcard-wrapper-custom"
+              style={{ overflowY: "auto", maxHeight: "80vh" }}
+            >
+              <Col sm="12">
+                {contacts.map((contact, index) => (
+                  <Card
+                    key={index}
+                    body
+                    className="subcard-custom mx-1 my-2"
+                    onClick={() => setChatContact(contact)}
+                  >
+                    <CardTitle className="mb-1" tag="h6">
+                      {contact.firstName} {contact.lastName}
+                    </CardTitle>
+                    <CardText className="small-text">
+                      {contact.username}
+                    </CardText>
+                  </Card>
+                ))}
+              </Col>
+            </div>
+          </Card>
         </Col>
-      </div>
-    </Card>
-  </Col>
-  <Col sm="8">
-    <Card
-      body
-      className="card-custom"
-      style={{ height: "80vh" }}
-    >
-      <CardTitle tag="h5">{activeContact ? `${activeContact.firstName} ${activeContact.lastName}` : 'Pick conversation'}</CardTitle>
-      <CardSubtitle className="mb-2 text-muted" tag="h6">
-        Online/Offline
-      </CardSubtitle>
-      <div
-        className="subcard-wrapper-custom"
-        style={{ overflowY: "auto", maxHeight: "80vh" }}
-      >
-        <Col sm="12"></Col>
-      </div>
-    </Card>
-  </Col>
-</Row>
+        <Col sm="8">
+          <Card body className="card-custom" style={{ height: "80vh" }}>
+            <CardTitle tag="h5">
+              {chatContact
+                ? `${chatContact.firstName} ${chatContact.lastName}`
+                : "Pick conversation"}
+            </CardTitle>
+            {chatContact && (
+              <CardSubtitle className="mb-2 text-muted" tag="h6">
+                {activeContacts.includes(chatContact.username)
+                  ? "Online"
+                  : "Offline"}
+              </CardSubtitle>
+            )}
 
+            <div
+              className="subcard-wrapper-custom"
+              style={{ overflowY: "auto", maxHeight: "80vh" }}
+            >
+              <Col sm="12"></Col>
+            </div>
+          </Card>
+        </Col>
+      </Row>
     </>
   );
 };
