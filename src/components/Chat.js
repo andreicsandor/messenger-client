@@ -14,6 +14,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../static/styles.css";
 import { ReactComponent as ActiveUserIcon } from "../assets/images/chat-fill.svg";
 import { ReactComponent as UserIcon } from "../assets/images/moon-stars-fill.svg";
+import { ReactComponent as ChatIcon } from "../assets/images/chat-quote-fill.svg";
 import {
   Card,
   CardBody,
@@ -34,7 +35,7 @@ const ChatView = () => {
   const [notifications, setNotifications] = useState([]);
 
   const navigate = useNavigate();
-  
+
   const fetchContacts = async () => {
     try {
       const response = await api.get("/api/contacts");
@@ -53,13 +54,10 @@ const ChatView = () => {
       const activeContacts = response.data;
       setActiveContacts(activeContacts);
     } catch (error) {
-      console.error(
-        "An error occurred while fetching active contacts:",
-        error
-      );
+      console.error("An error occurred while fetching active contacts:", error);
     }
   };
- 
+
   const onError = (err) => {
     console.log(err);
   };
@@ -204,14 +202,22 @@ const ChatView = () => {
                       </Col>
                       <Col xs="4" className="logo-container">
                         <div>
-                        <CardTitle className="mb-1" tag="h6">
+                          <CardTitle className="mb-1" tag="h6">
                             {activeContacts.includes(contact.username) ? (
                               <ActiveUserIcon
-                                style={{ width: "12px", height: "12px", color: "green" }}
+                                style={{
+                                  width: "12px",
+                                  height: "12px",
+                                  color: "green",
+                                }}
                               />
                             ) : (
                               <UserIcon
-                                style={{ width: "12px", height: "12px" }}
+                                style={{
+                                  width: "12px",
+                                  height: "12px",
+                                  color: "purple",
+                                }}
                               />
                             )}
                           </CardTitle>
@@ -238,7 +244,29 @@ const ChatView = () => {
                   : "Offline"}
               </CardSubtitle>
             )}
-
+            <CardBody
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              {!chatContact && (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    color: "gray",
+                    opacity: "0.1",
+                  }}
+                >
+                  <ChatIcon style={{ width: "100px", height: "100px" }} />
+                </div>
+              )}
+            </CardBody>
             <div
               className="subcard-wrapper-custom"
               style={{ overflowY: "auto", maxHeight: "80vh" }}
