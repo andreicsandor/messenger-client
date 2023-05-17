@@ -84,7 +84,7 @@ body {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  opacity: 0.15;
+  opacity: 0.3;
 }
 
 .nav {
