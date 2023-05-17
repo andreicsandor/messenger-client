@@ -80,6 +80,13 @@ body {
   color: black;
 }
 
+.logo-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  opacity: 0.15;
+}
+
 .nav {
   top: 0px;
   background-color: transparent;

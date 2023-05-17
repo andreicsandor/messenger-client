@@ -12,6 +12,8 @@ import NotificationDTO from "../dto/NotificationDTO";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../static/styles.css";
+import { ReactComponent as ActiveUserIcon } from "../assets/images/chat-fill.svg";
+import { ReactComponent as UserIcon } from "../assets/images/moon-stars-fill.svg";
 import {
   Card,
   CardBody,
@@ -81,13 +83,15 @@ const ChatView = () => {
     const fetchContacts = async () => {
       try {
         const response = await api.get("/api/contacts");
-        const contacts = response.data.filter(contact => contact.username !== user);
+        const contacts = response.data.filter(
+          (contact) => contact.username !== user
+        );
         setContacts(contacts);
       } catch (error) {
         console.error("An error occurred while fetching contacts:", error);
       }
     };
-  
+
     fetchContacts();
   }, [user]);
 
@@ -98,14 +102,17 @@ const ChatView = () => {
         const activeContacts = response.data;
         setActiveContacts(activeContacts);
       } catch (error) {
-        console.error("An error occurred while fetching active contacts:", error);
+        console.error(
+          "An error occurred while fetching active contacts:",
+          error
+        );
       }
     };
-  
+
     if (contacts.length > 0) {
       fetchActiveContacts();
     }
-  }, [contacts]);  
+  }, [contacts]);
 
   // Sets the default data input
   const [input, setInput] = useState({
@@ -183,12 +190,33 @@ const ChatView = () => {
                     className="subcard-custom mx-1 my-2"
                     onClick={() => setChatContact(contact)}
                   >
-                    <CardTitle className="mb-1" tag="h6">
-                      {contact.firstName} {contact.lastName}
-                    </CardTitle>
-                    <CardText className="small-text">
-                      {contact.username}
-                    </CardText>
+                    <Row>
+                      <Col xs="8">
+                        <div>
+                          <CardTitle className="mb-1" tag="h6">
+                            {contact.firstName} {contact.lastName}
+                          </CardTitle>
+                          <CardText className="small-text">
+                            {contact.username}
+                          </CardText>
+                        </div>
+                      </Col>
+                      <Col xs="4" className="logo-container">
+                        <div>
+                        <CardTitle className="mb-1" tag="h6">
+                            {activeContacts.includes(contact.username) ? (
+                              <ActiveUserIcon
+                                style={{ width: "12px", height: "12px", color: "green" }}
+                              />
+                            ) : (
+                              <UserIcon
+                                style={{ width: "12px", height: "12px" }}
+                              />
+                            )}
+                          </CardTitle>
+                        </div>
+                      </Col>
+                    </Row>
                   </Card>
                 ))}
               </Col>
