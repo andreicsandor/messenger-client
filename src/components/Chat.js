@@ -99,7 +99,7 @@ const ChatView = () => {
     fetchActiveContacts();
   };
 
-  // Gets the logged-in user details from cookies
+  // Get the logged-in user details from cookies
   useEffect(() => {
     const user = Cookies.get("loggedInUser");
     if (!user) {
@@ -116,16 +116,19 @@ const ChatView = () => {
     };
   }, [navigate]);
 
+  // Fetch the contacts list
   useEffect(() => {
     fetchContacts();
   }, [user]);
 
+  // Fetch the active contacts
   useEffect(() => {
     if (contacts.length > 0) {
       fetchActiveContacts();
     }
   }, [contacts]);
 
+  // Display the notifications
   useEffect(() => {
     if (notification !== false) {
       const timer = setTimeout(() => {
@@ -297,7 +300,9 @@ const ChatView = () => {
               className="subcard-wrapper-custom"
               style={{ overflowY: "auto", maxHeight: "80vh" }}
             >
-              <Col sm="12"></Col>
+              <Col sm="12">
+              
+              </Col>
             </div>
           </Card>
         </Col>
