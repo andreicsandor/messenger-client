@@ -43,6 +43,7 @@ const ChatView = () => {
   const [notificationText, setNotificationText] = useState("");
 
   const messagesEndRef = useRef(null);
+  const chatContactRef = useRef(null);
 
   const navigate = useNavigate();
 
@@ -89,12 +90,17 @@ const ChatView = () => {
 
   const onMessage = (response) => {
     var responseData = JSON.parse(response.body);
+  
+    if (chatContactRef.current && 
+      (responseData.sender === chatContactRef.current.username || 
+      responseData.recipient === chatContactRef.current.username)) {
     setMessages((prevMessages) => [...prevMessages, responseData]);
-  };
+  }
+  };  
 
   const onNotification = (response) => {
     var responseData = JSON.parse(response.body);
-
+  
     // Handle the online/offline type of notification
     if (responseData.type === "ONLINE") {
       // Add the user to the list of online users
@@ -111,13 +117,17 @@ const ChatView = () => {
       setNotification(true);
       setNotificationText(`${responseData.sender} is offline.`);
     } else if (responseData.type === "MESSAGE") {
-      // Notify the user that they received a new message
-      setNotification(true);
-      setNotificationText(`${responseData.sender} ${responseData.content}`);
+      // Notify the user that they received a new message only if it's not from the active chat contact
+      if (responseData.sender !== chatContactRef.current?.username) {
+        setNotification(true);
+        setNotificationText(`${responseData.sender} ${responseData.content}`);
+      }
     }
-
+  
     fetchActiveContacts();
   };
+  
+  
 
   // Get the logged-in user details from cookies
   useEffect(() => {
@@ -178,6 +188,11 @@ const ChatView = () => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Keep latest selected chat
+  useEffect(() => {
+    chatContactRef.current = chatContact;
+  }, [chatContact]);
 
   // Sets the default data input
   const [input, setInput] = useState({
