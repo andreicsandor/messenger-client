@@ -316,10 +316,14 @@ const ChatView = () => {
                 messages.length > 0 ? (
                   <div className="message-list">
                     {messages.map((message, index) => (
-                      <Card key={index} className="mb-2">
+                      <Card
+                        key={index}
+                        className={`mb-2 message-card ${
+                          message.sender === user ? "message-sent" : "message-received"
+                        }`}
+                      >
                         <CardBody>
-                          <p>Sender: {message.sender}</p>
-                          <p>Message: {message.content}</p>
+                          <p>{message.content}</p>
                         </CardBody>
                       </Card>
                     ))}
