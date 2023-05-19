@@ -19,6 +19,7 @@ import { ReactComponent as ChatIcon } from "../assets/images/chat-quote-fill.svg
 import {
   Card,
   CardBody,
+  CardFooter,
   CardLink,
   CardSubtitle,
   CardText,
@@ -319,7 +320,9 @@ const ChatView = () => {
                       <Card
                         key={index}
                         className={`mb-2 message-card ${
-                          message.sender === user ? "message-sent" : "message-received"
+                          message.sender === user
+                            ? "message-sent"
+                            : "message-received"
                         }`}
                       >
                         <CardBody>
@@ -359,34 +362,28 @@ const ChatView = () => {
                 </div>
               )}
             </CardBody>
+            <CardFooter>
+              <div>
+                <input
+                  type="text"
+                  name="recipient"
+                  value={input.recipient}
+                  onChange={handleInputChange}
+                  placeholder="Type a recipient..."
+                />
+                <input
+                  type="text"
+                  name="content"
+                  value={input.content}
+                  onChange={handleInputChange}
+                  placeholder="Type a message..."
+                />
+                <button onClick={handleSend}>Send</button>
+              </div>
+            </CardFooter>
           </Card>
         </Col>
       </Row>
-      <div hidden>
-        <input
-          type="text"
-          name="recipient"
-          value={input.recipient}
-          onChange={handleInputChange}
-          placeholder="Type a recipient..."
-        />
-        <input
-          type="text"
-          name="content"
-          value={input.content}
-          onChange={handleInputChange}
-          placeholder="Type a message..."
-        />
-        <button onClick={handleSend}>Send</button>
-      </div>
-      <div hidden>
-        {messages.map((message, index) => (
-          <div key={index}>
-            <p>Sender: {message.sender}</p>
-            <p>Message: {message.content}</p>
-          </div>
-        ))}
-      </div>
     </>
   );
 };
