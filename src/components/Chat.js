@@ -262,6 +262,10 @@ const ChatView = () => {
     sendNotificationToServer(pingNotification);
   };
 
+  const handleLeave = () => {
+    
+  };
+
   return (
     <>
       {notification !== "" && !notificationText.includes(user) && (
@@ -285,10 +289,29 @@ const ChatView = () => {
       <Row className="m-5">
         <Col className="mt-4" sm="4">
           <Card body className="card-custom" style={{ height: "80vh" }}>
-            <CardTitle tag="h5">Messenger</CardTitle>
+            <Row>
+              <Col xs="8">
+                <CardTitle tag="h5">Messenger</CardTitle>
+              </Col>
+
+              <Col
+                xs="4"
+                className="d-flex align-items-center justify-content-end"
+              >
+                <Button
+                  color="light"
+                  size="sm"
+                  onClick={handleLeave}
+                  style={{ fontWeight: 500 }}
+                >
+                  Leave
+                </Button>
+              </Col>
+            </Row>
             <CardSubtitle className="mb-3 text-muted" tag="h6">
               Contacts
             </CardSubtitle>
+
             <div
               className="subcard-wrapper-custom"
               style={{ overflowY: "auto", maxHeight: "80vh" }}
@@ -351,13 +374,6 @@ const ChatView = () => {
                     ? `${chatContact.firstName} ${chatContact.lastName}`
                     : "Pick conversation"}
                 </CardTitle>
-                {chatContact && (
-                  <CardSubtitle className="mb-2 text-muted" tag="h6">
-                    {activeContacts.includes(chatContact.username)
-                      ? "Online"
-                      : "Offline"}
-                  </CardSubtitle>
-                )}
               </Col>
               {chatContact && (
                 <Col
@@ -368,13 +384,20 @@ const ChatView = () => {
                     color="light"
                     size="sm"
                     onClick={handlePing}
-                    style={{ fontWeight: 600 }}
+                    style={{ fontWeight: 500 }}
                   >
                     Ping
                   </Button>
                 </Col>
               )}
             </Row>
+            {chatContact && (
+              <CardSubtitle className="mb-2 text-muted" tag="h6">
+                {activeContacts.includes(chatContact.username)
+                  ? "Online"
+                  : "Offline"}
+              </CardSubtitle>
+            )}
 
             <CardBody
               className="mb-2"
