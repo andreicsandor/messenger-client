@@ -61,6 +61,12 @@ body {
   opacity: 1;
 }
 
+.input-custom:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+
 .lead {
   font-size: 18px !important;
 }

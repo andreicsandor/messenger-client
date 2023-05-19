@@ -17,6 +17,7 @@ import { ReactComponent as ActiveUserIcon } from "../assets/images/chat-fill.svg
 import { ReactComponent as UserIcon } from "../assets/images/moon-stars-fill.svg";
 import { ReactComponent as ChatIcon } from "../assets/images/chat-quote-fill.svg";
 import {
+  Button,
   Card,
   CardBody,
   CardFooter,
@@ -25,6 +26,7 @@ import {
   CardText,
   CardTitle,
   Col,
+  Input,
   Row,
   Toast,
   ToastBody,
@@ -165,6 +167,10 @@ const ChatView = () => {
       if (chatId !== null) {
         fetchMessages(chatId);
       }
+      setInput((prevState) => ({
+        ...prevState,
+        recipient: chatContact.username,
+      }));
     }
   }, [chatContact]);
 
@@ -207,11 +213,10 @@ const ChatView = () => {
       // Generate chatId
       let chatId = setChatId(user, chatContact);
 
-      setInput({
-        sender: user,
-        recipient: "",
-        content: "",
-      });
+      setInput((prevState) => ({
+        ...prevState,
+        content: "", // Clear the content field
+      }));
 
       // After sending the message, fetch the updated list of messages.
       fetchMessages(chatId);
@@ -312,7 +317,10 @@ const ChatView = () => {
                   : "Offline"}
               </CardSubtitle>
             )}
-            <CardBody style={{ overflowY: "auto", maxHeight: "60vh" }}>
+            <CardBody
+              className="mb-2"
+              style={{ overflowY: "auto", maxHeight: "70vh" }}
+            >
               {chatContact ? (
                 messages.length > 0 ? (
                   <div className="message-list">
@@ -343,7 +351,7 @@ const ChatView = () => {
                     }}
                   >
                     <p>
-                      Don't be shy, say hi to <b>{chatContact.username}</b>! 👋
+                      Don't be shy, say hi to <b>{chatContact.firstName}</b>! 👋
                     </p>
                   </div>
                 )
@@ -362,25 +370,43 @@ const ChatView = () => {
                 </div>
               )}
             </CardBody>
-            <CardFooter>
-              <div>
-                <input
-                  type="text"
-                  name="recipient"
-                  value={input.recipient}
-                  onChange={handleInputChange}
-                  placeholder="Type a recipient..."
-                />
-                <input
-                  type="text"
-                  name="content"
-                  value={input.content}
-                  onChange={handleInputChange}
-                  placeholder="Type a message..."
-                />
-                <button onClick={handleSend}>Send</button>
-              </div>
-            </CardFooter>
+            <div>
+              {chatContact && (
+                <div>
+                  <Input
+                    hidden
+                    type="text"
+                    name="recipient"
+                    value={input.recipient}
+                    onChange={handleInputChange}
+                    placeholder="Type a recipient..."
+                  />
+                  <Row>
+                    <Col xs="10">
+                      <Input
+                        className="input-custom"
+                        bsSize="sm"
+                        type="text"
+                        name="content"
+                        value={input.content}
+                        onChange={handleInputChange}
+                        placeholder="Message"
+                      />
+                    </Col>
+                    <Col xs="2">
+                      <Button
+                        color="dark"
+                        size="sm"
+                        onClick={handleSend}
+                        style={{ fontWeight: "bold", width: "100%" }}
+                      >
+                        Send
+                      </Button>
+                    </Col>
+                  </Row>
+                </div>
+              )}
+            </div>
           </Card>
         </Col>
       </Row>
