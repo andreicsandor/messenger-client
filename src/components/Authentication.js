@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  connectToBootServer,
+  connectToJoinServer,
   disconnectFromServer,
   sendNotificationToServer,
 } from "./Server";
@@ -52,13 +52,13 @@ const LoginView = () => {
         Cookies.set("loggedInUser", response.data.username);
 
         // Connect to server when component mounts
-        connectToBootServer(response.data.username, onError);
+        connectToJoinServer(response.data.username, onError);
 
         // Prepare the notification data transfer object
-        const notificationOnline = new NotificationDTO("ONLINE", response.data.username, "is online");
+        const onlineNotification = new NotificationDTO("ONLINE", response.data.username, "", "is online.");
         
         // Send the online status notification to the server
-        sendNotificationToServer(notificationOnline);
+        sendNotificationToServer(onlineNotification);
 
         navigate("/chat");
       } else {
@@ -140,9 +140,9 @@ const LogoutView = () => {
 
     if (user) {
       // Prepare the notification data transfer object
-      const notificationOffline = new NotificationDTO("OFFLINE", user, "is offline");
-      // Send the online status notification to the server
-      sendNotificationToServer(notificationOffline);
+      const offlineNotification = new NotificationDTO("OFFLINE", user, "", "is offline.");
+      // Send the offline status notification to the server
+      sendNotificationToServer(offlineNotification);
       disconnectFromServer();
 
       // Remove session cookies

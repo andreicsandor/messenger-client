@@ -4,6 +4,7 @@ import {
   connectToServer,
   disconnectFromServer,
   sendMessageToServer,
+  sendNotificationToServer,
 } from "./Server";
 import api from "./Api";
 import Cookies from "js-cookie";
@@ -24,6 +25,9 @@ import {
   CardTitle,
   Col,
   Row,
+  Toast,
+  ToastBody,
+  ToastHeader,
 } from "reactstrap";
 
 const ChatView = () => {
@@ -32,7 +36,8 @@ const ChatView = () => {
   const [activeContacts, setActiveContacts] = useState([]);
   const [chatContact, setChatContact] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [notifications, setNotifications] = useState([]);
+  const [notification, setNotification] = useState("");
+  const [notificationText, setNotificationText] = useState("");
 
   const navigate = useNavigate();
 
@@ -76,11 +81,19 @@ const ChatView = () => {
       if (!activeContacts.includes(responseData.sender)) {
         setActiveContacts([...activeContacts, responseData.sender]);
       }
+      setNotification(true);
+      setNotificationText(`${responseData.sender} ${responseData.content}`);
     } else if (responseData.type === "OFFLINE") {
       // Remove the user from the list of online users
       setActiveContacts(
         activeContacts.filter((user) => user !== responseData.sender)
       );
+      setNotification(true);
+      setNotificationText(`${responseData.sender} is offline.`);
+    } else if (responseData.type === "MESSAGE") {
+      // Notify the user that they received a new message
+      setNotification(true);
+      setNotificationText(`${responseData.sender} ${responseData.content}`);
     }
 
     fetchActiveContacts();
@@ -113,6 +126,17 @@ const ChatView = () => {
     }
   }, [contacts]);
 
+  useEffect(() => {
+    if (notification !== false) {
+      const timer = setTimeout(() => {
+        setNotification(false);
+      }, 5000);
+
+      // Clear timeout if the component is unmounted
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
+
   // Sets the default data input
   const [input, setInput] = useState({
     sender: user,
@@ -128,10 +152,21 @@ const ChatView = () => {
   const handleSend = () => {
     // Prepare the message data transfer object
     if (input.recipient !== "" && input.content !== "") {
+      // Prepare the message data transfer object
       const message = new MessageDTO(user, input.recipient, input.content);
+      // Prepare the notification data transfer object
+      const messageNotification = new NotificationDTO(
+        "MESSAGE",
+        user,
+        input.recipient,
+        "sent you a message."
+      );
 
       // Send the message to the server that sends it back to the corresponding user
       sendMessageToServer(message);
+
+      // Send the notification to the server that sends it back to the corresponding user
+      sendNotificationToServer(messageNotification);
 
       setInput({
         sender: user,
@@ -143,35 +178,26 @@ const ChatView = () => {
 
   return (
     <>
-      <div>
-        <h3>New message</h3>
-        <input
-          type="text"
-          name="recipient"
-          value={input.recipient}
-          onChange={handleInputChange}
-          placeholder="Type a recipient..."
-        />
-        <input
-          type="text"
-          name="content"
-          value={input.content}
-          onChange={handleInputChange}
-          placeholder="Type a message..."
-        />
-        <button onClick={handleSend}>Send</button>
-      </div>
-      <div>
-        {messages.map((message, index) => (
-          <div key={index}>
-            <p>Sender: {message.sender}</p>
-            <p>Message: {message.content}</p>
-          </div>
-        ))}
-      </div>
-
+      {notification !== "" && !notificationText.includes(user) && (
+        <div
+          className={`p-1 rounded bg-docs-transparent-grid fade ${
+            notification ? "show" : ""
+          }`}
+          style={{
+            position: "fixed",
+            top: "30px",
+            right: "30px",
+            zIndex: "10000",
+          }}
+        >
+          <Toast>
+            <ToastHeader>Notification</ToastHeader>
+            <ToastBody>{notificationText}</ToastBody>
+          </Toast>
+        </div>
+      )}
       <Row className="m-5">
-        <Col sm="4">
+        <Col className="mt-5" sm="4">
           <Card body className="card-custom" style={{ height: "80vh" }}>
             <CardTitle tag="h5">Messenger</CardTitle>
             <CardSubtitle className="mb-3 text-muted" tag="h6">
@@ -230,7 +256,7 @@ const ChatView = () => {
             </div>
           </Card>
         </Col>
-        <Col sm="8">
+        <Col className="mt-5" sm="8">
           <Card body className="card-custom" style={{ height: "80vh" }}>
             <CardTitle tag="h5">
               {chatContact
@@ -276,6 +302,31 @@ const ChatView = () => {
           </Card>
         </Col>
       </Row>
+      <div>
+        <input
+          type="text"
+          name="recipient"
+          value={input.recipient}
+          onChange={handleInputChange}
+          placeholder="Type a recipient..."
+        />
+        <input
+          type="text"
+          name="content"
+          value={input.content}
+          onChange={handleInputChange}
+          placeholder="Type a message..."
+        />
+        <button onClick={handleSend}>Send</button>
+      </div>
+      <div>
+        {messages.map((message, index) => (
+          <div key={index}>
+            <p>Sender: {message.sender}</p>
+            <p>Message: {message.content}</p>
+          </div>
+        ))}
+      </div>
     </>
   );
 };

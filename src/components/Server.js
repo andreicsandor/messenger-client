@@ -3,7 +3,7 @@ import SockJS from "sockjs-client";
 
 let stompClient = null;
 
-const connectToBootServer = (user, onError) => {
+const connectToJoinServer = (user, onError) => {
   // Create new instance of Client
   stompClient = new Client({
     webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
@@ -24,6 +24,8 @@ const connectToServer = (user, onNotification, onMessage, onError) => {
       console.log("Connected");
       // Subscribe to new messages channel & fetch automatically new messages
       stompClient.subscribe("/user/" + user + "/messages", onMessage);
+      // Subscribe to new message notifications channel
+      stompClient.subscribe("/user/" + user + "/notifications", onNotification);
       // Subscribe to notifications channel 
       stompClient.subscribe("/public/notifications", onNotification);
     },
@@ -68,5 +70,4 @@ const sendNotificationToServer = (notification) => {
   }
 };
 
-
-export { connectToBootServer, connectToServer, disconnectFromServer, sendMessageToServer, sendNotificationToServer };
+export { connectToJoinServer, connectToServer, disconnectFromServer, sendMessageToServer, sendNotificationToServer };
