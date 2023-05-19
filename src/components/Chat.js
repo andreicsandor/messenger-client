@@ -135,7 +135,7 @@ const ChatView = () => {
       // Clear timeout if the component is unmounted
       return () => clearTimeout(timer);
     }
-  }, [notification]);
+  }, [notification, notificationText]);
 
   // Sets the default data input
   const [input, setInput] = useState({
@@ -197,7 +197,7 @@ const ChatView = () => {
         </div>
       )}
       <Row className="m-5">
-        <Col className="mt-5" sm="4">
+        <Col className="mt-4" sm="4">
           <Card body className="card-custom" style={{ height: "80vh" }}>
             <CardTitle tag="h5">Messenger</CardTitle>
             <CardSubtitle className="mb-3 text-muted" tag="h6">
@@ -256,7 +256,7 @@ const ChatView = () => {
             </div>
           </Card>
         </Col>
-        <Col className="mt-5" sm="8">
+        <Col className="mt-4" sm="8">
           <Card body className="card-custom" style={{ height: "80vh" }}>
             <CardTitle tag="h5">
               {chatContact
