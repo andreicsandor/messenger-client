@@ -157,9 +157,6 @@ const ChatView = () => {
 
   // Fetch and display the messages for a selected conversation
   useEffect(() => {
-    // Generate chatId
-    let chatId = setChatId(user, input.recipient);
-
     if (chatContact !== null) {
       let chatId = setChatId(user, chatContact);
       if (chatId !== null) {
@@ -199,14 +196,14 @@ const ChatView = () => {
       // Send the notification to the server that sends it back to the corresponding user
       sendNotificationToServer(messageNotification);
 
+      // Generate chatId
+      let chatId = setChatId(user, chatContact);
+
       setInput({
         sender: user,
         recipient: "",
         content: "",
       });
-
-      // Generate chatId
-      let chatId = setChatId(user, input.recipient);
 
       // After sending the message, fetch the updated list of messages.
       fetchMessages(chatId);
