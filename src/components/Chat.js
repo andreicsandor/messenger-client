@@ -304,15 +304,19 @@ const ChatView = () => {
                   : "Offline"}
               </CardSubtitle>
             )}
-            <CardBody
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "100%",
-              }}
-            >
-              {!chatContact && (
+            <CardBody style={{ overflowY: "auto", maxHeight: "60vh" }}>
+              {chatContact ? (
+                <div className="message-list">
+                  {messages.map((message, index) => (
+                    <Card key={index} className="mb-2">
+                      <CardBody>
+                        <p>Sender: {message.sender}</p>
+                        <p>Message: {message.content}</p>
+                      </CardBody>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
                 <div
                   style={{
                     display: "flex",
@@ -327,23 +331,6 @@ const ChatView = () => {
                 </div>
               )}
             </CardBody>
-            <div
-              className="subcard-wrapper-custom"
-              style={{ overflowY: "auto", maxHeight: "80vh" }}
-            >
-              <Col sm="12">
-                {chatContact && (
-                  <div className="message-list">
-                    {messages.map((message, index) => (
-                      <div key={index}>
-                        <p>Sender: {message.sender}</p>
-                        <p>Message: {message.content}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </Col>
-            </div>
           </Card>
         </Col>
       </Row>
