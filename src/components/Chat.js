@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   connectToServer,
@@ -38,6 +38,8 @@ const ChatView = () => {
   const [messages, setMessages] = useState([]);
   const [notification, setNotification] = useState("");
   const [notificationText, setNotificationText] = useState("");
+
+  const messagesEndRef = useRef(null);
 
   const navigate = useNavigate();
 
@@ -164,6 +166,11 @@ const ChatView = () => {
       }
     }
   }, [chatContact]);
+
+  // Scroll to the bottom of conversation
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   // Sets the default data input
   const [input, setInput] = useState({
@@ -306,16 +313,33 @@ const ChatView = () => {
             )}
             <CardBody style={{ overflowY: "auto", maxHeight: "60vh" }}>
               {chatContact ? (
-                <div className="message-list">
-                  {messages.map((message, index) => (
-                    <Card key={index} className="mb-2">
-                      <CardBody>
-                        <p>Sender: {message.sender}</p>
-                        <p>Message: {message.content}</p>
-                      </CardBody>
-                    </Card>
-                  ))}
-                </div>
+                messages.length > 0 ? (
+                  <div className="message-list">
+                    {messages.map((message, index) => (
+                      <Card key={index} className="mb-2">
+                        <CardBody>
+                          <p>Sender: {message.sender}</p>
+                          <p>Message: {message.content}</p>
+                        </CardBody>
+                      </Card>
+                    ))}
+                    <div ref={messagesEndRef} />
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "100%",
+                      color: "gray",
+                    }}
+                  >
+                    <p>
+                      Don't be shy, say hi to <b>{chatContact.username}</b>! 👋
+                    </p>
+                  </div>
+                )
               ) : (
                 <div
                   style={{
@@ -334,7 +358,7 @@ const ChatView = () => {
           </Card>
         </Col>
       </Row>
-      <div>
+      <div hidden>
         <input
           type="text"
           name="recipient"
@@ -351,7 +375,7 @@ const ChatView = () => {
         />
         <button onClick={handleSend}>Send</button>
       </div>
-      <div>
+      <div hidden>
         {messages.map((message, index) => (
           <div key={index}>
             <p>Sender: {message.sender}</p>
