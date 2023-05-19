@@ -27,6 +27,10 @@ import {
   CardTitle,
   Col,
   Input,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   Row,
   Toast,
   ToastBody,
@@ -44,6 +48,9 @@ const ChatView = () => {
 
   const messagesEndRef = useRef(null);
   const chatContactRef = useRef(null);
+
+  const [pingModal, setPingModal] = useState(false);
+  const [pingModalText, setPingModalText] = useState("");
 
   const navigate = useNavigate();
 
@@ -90,17 +97,19 @@ const ChatView = () => {
 
   const onMessage = (response) => {
     var responseData = JSON.parse(response.body);
-  
-    if (chatContactRef.current && 
-      (responseData.sender === chatContactRef.current.username || 
-      responseData.recipient === chatContactRef.current.username)) {
-    setMessages((prevMessages) => [...prevMessages, responseData]);
-  }
-  };  
+
+    if (
+      chatContactRef.current &&
+      (responseData.sender === chatContactRef.current.username ||
+        responseData.recipient === chatContactRef.current.username)
+    ) {
+      setMessages((prevMessages) => [...prevMessages, responseData]);
+    }
+  };
 
   const onNotification = (response) => {
     var responseData = JSON.parse(response.body);
-  
+
     // Handle the online/offline type of notification
     if (responseData.type === "ONLINE") {
       // Add the user to the list of online users
@@ -122,12 +131,14 @@ const ChatView = () => {
         setNotification(true);
         setNotificationText(`${responseData.sender} ${responseData.content}`);
       }
+    } else if (responseData.type === "PING") {
+      // Open a full screen modal when the user receives a ping
+      setPingModal(true);
+      setPingModalText(`${responseData.sender} has pinged you!`);
     }
-  
+
     fetchActiveContacts();
   };
-  
-  
 
   // Get the logged-in user details from cookies
   useEffect(() => {
@@ -238,6 +249,19 @@ const ChatView = () => {
     }
   };
 
+  const handlePing = () => {
+    // Prepare the notification data transfer object
+    const pingNotification = new NotificationDTO(
+      "PING",
+      user,
+      chatContact.username,
+      "has pinged you!"
+    );
+
+    // Send the notification to the server that sends it back to the corresponding user
+    sendNotificationToServer(pingNotification);
+  };
+
   return (
     <>
       {notification !== "" && !notificationText.includes(user) && (
@@ -320,18 +344,38 @@ const ChatView = () => {
         </Col>
         <Col className="mt-4" sm="8">
           <Card body className="card-custom" style={{ height: "80vh" }}>
-            <CardTitle tag="h5">
-              {chatContact
-                ? `${chatContact.firstName} ${chatContact.lastName}`
-                : "Pick conversation"}
-            </CardTitle>
-            {chatContact && (
-              <CardSubtitle className="mb-2 text-muted" tag="h6">
-                {activeContacts.includes(chatContact.username)
-                  ? "Online"
-                  : "Offline"}
-              </CardSubtitle>
-            )}
+            <Row>
+              <Col xs="8">
+                <CardTitle tag="h5">
+                  {chatContact
+                    ? `${chatContact.firstName} ${chatContact.lastName}`
+                    : "Pick conversation"}
+                </CardTitle>
+                {chatContact && (
+                  <CardSubtitle className="mb-2 text-muted" tag="h6">
+                    {activeContacts.includes(chatContact.username)
+                      ? "Online"
+                      : "Offline"}
+                  </CardSubtitle>
+                )}
+              </Col>
+              {chatContact && (
+                <Col
+                  xs="4"
+                  className="d-flex align-items-center justify-content-end"
+                >
+                  <Button
+                    color="light"
+                    size="sm"
+                    onClick={handlePing}
+                    style={{ fontWeight: 600 }}
+                  >
+                    Ping
+                  </Button>
+                </Col>
+              )}
+            </Row>
+
             <CardBody
               className="mb-2"
               style={{ overflowY: "auto", maxHeight: "70vh" }}
@@ -425,6 +469,20 @@ const ChatView = () => {
           </Card>
         </Col>
       </Row>
+      <Modal isOpen={pingModal}>
+        <ModalHeader>Ping Notification</ModalHeader>
+        <ModalBody>{pingModalText}</ModalBody>
+        <ModalFooter>
+          <Button
+            color="dark"
+            size="sm"
+            style={{ fontWeight: "bold", width: "25%" }}
+            onClick={() => setPingModal(false)}
+          >
+            Okay
+          </Button>
+        </ModalFooter>
+      </Modal>
     </>
   );
 };
