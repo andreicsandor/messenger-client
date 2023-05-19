@@ -41,6 +41,12 @@ const ChatView = () => {
 
   const navigate = useNavigate();
 
+  const setChatId = (sender, receiver) => {
+    let ids = [sender, receiver.username];
+    ids.sort();
+    return ids.join("_");
+  };
+
   const fetchContacts = async () => {
     try {
       const response = await api.get("/api/contacts");
@@ -60,6 +66,15 @@ const ChatView = () => {
       setActiveContacts(activeContacts);
     } catch (error) {
       console.error("An error occurred while fetching active contacts:", error);
+    }
+  };
+
+  const fetchMessages = async (chatId) => {
+    try {
+      const response = await api.get(`/api/messages/conversation/${chatId}`);
+      setMessages(response.data);
+    } catch (error) {
+      console.error("An error occurred while fetching messages:", error);
     }
   };
 
@@ -140,6 +155,19 @@ const ChatView = () => {
     }
   }, [notification, notificationText]);
 
+  // Fetch and display the messages for a selected conversation
+  useEffect(() => {
+    // Generate chatId
+    let chatId = setChatId(user, input.recipient);
+
+    if (chatContact !== null) {
+      let chatId = setChatId(user, chatContact);
+      if (chatId !== null) {
+        fetchMessages(chatId);
+      }
+    }
+  }, [chatContact]);
+
   // Sets the default data input
   const [input, setInput] = useState({
     sender: user,
@@ -176,6 +204,12 @@ const ChatView = () => {
         recipient: "",
         content: "",
       });
+
+      // Generate chatId
+      let chatId = setChatId(user, input.recipient);
+
+      // After sending the message, fetch the updated list of messages.
+      fetchMessages(chatId);
     }
   };
 
@@ -301,7 +335,16 @@ const ChatView = () => {
               style={{ overflowY: "auto", maxHeight: "80vh" }}
             >
               <Col sm="12">
-              
+                {chatContact && (
+                  <div className="message-list">
+                    {messages.map((message, index) => (
+                      <div key={index}>
+                        <p>Sender: {message.sender}</p>
+                        <p>Message: {message.content}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </Col>
             </div>
           </Card>
