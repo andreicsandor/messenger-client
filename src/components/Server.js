@@ -43,7 +43,6 @@ const disconnectFromServer = () => {
 };
 
 const sendMessageToServer = (message) => {
-  console.log(message);
   if (stompClient) {
     if (stompClient.connected) {
       stompClient.publish({
@@ -57,7 +56,6 @@ const sendMessageToServer = (message) => {
 };
 
 const sendNotificationToServer = (notification) => {
-  console.log(notification);
   if (stompClient) {
     if (stompClient.connected) {
       stompClient.publish({
