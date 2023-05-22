@@ -480,7 +480,8 @@ const ChatView = () => {
                     placeholder="Type a recipient..."
                   />
                   <Row>
-                    <Col xs="10">
+                    <Col xs="1"></Col>
+                    <Col xs="9">
                       <Input
                         className="input-custom"
                         bsSize="sm"
@@ -496,7 +497,7 @@ const ChatView = () => {
                         color="dark"
                         size="sm"
                         onClick={handleSend}
-                        style={{ fontWeight: "bold", width: "100%" }}
+                        style={{ fontWeight: "bold"}}
                       >
                         Send
                       </Button>
