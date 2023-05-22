@@ -84,6 +84,7 @@ const LoginView = () => {
         <Row>
           <Col>
             <h1 className="mb-3 display-4 text-center">Welcome to Messenger</h1>
+            <div style={{ height: '50px' }}></div>
           </Col>
         </Row>
 
