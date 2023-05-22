@@ -261,7 +261,12 @@ const ChatView = () => {
 
   const handleLeave = () => {
     // Prepare the notification data transfer object
-    const offlineNotification = new NotificationDTO("OFFLINE", user, "", "is offline.");
+    const offlineNotification = new NotificationDTO(
+      "OFFLINE",
+      user,
+      "",
+      "is offline."
+    );
     // Send the offline status notification to the server
     sendNotificationToServer(offlineNotification);
 
@@ -269,10 +274,6 @@ const ChatView = () => {
       navigate("/logout");
     }, 1000);
   };
-
-  useEffect(() => {
-    console.log('activeContacts changed:', activeContacts);
-  }, [activeContacts]);
 
   return (
     <>
@@ -346,14 +347,7 @@ const ChatView = () => {
                       <Col xs="4" className="logo-container">
                         <div>
                           <CardTitle className="mb-1" tag="h6">
-                            {/* <NotificationIcon
-                              className="mx-3"
-                              style={{
-                                width: "10px",
-                                height: "10px",
-                                color: "red",
-                              }}
-                            /> */}
+                            
                             {activeContacts.includes(contact.username) ? (
                               <ActiveUserIcon
                                 style={{
@@ -371,6 +365,14 @@ const ChatView = () => {
                                 }}
                               />
                             )}
+                            <NotificationIcon
+                              className="mx-1"
+                              style={{
+                                width: "8px",
+                                height: "8px",
+                                color: "red",
+                              }}
+                            />
                           </CardTitle>
                         </div>
                       </Col>
@@ -497,7 +499,7 @@ const ChatView = () => {
                         color="dark"
                         size="sm"
                         onClick={handleSend}
-                        style={{ fontWeight: "bold"}}
+                        style={{ fontWeight: "bold" }}
                       >
                         Send
                       </Button>
