@@ -8,7 +8,7 @@ const connectToJoinServer = (user, onError) => {
   stompClient = new Client({
     webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
     onConnect: () => {
-      console.log("Connected");
+      console.log("Connected to join server.");
     },
     onStompError: onError,
   });
@@ -21,7 +21,7 @@ const connectToServer = (user, onNotification, onMessage, onError) => {
   stompClient = new Client({
     webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
     onConnect: () => {
-      console.log("Connected");
+      console.log("Connected to chat server.");
       // Subscribe to new messages channel & fetch automatically new messages
       stompClient.subscribe("/user/" + user + "/messages", onMessage);
       // Subscribe to new message notifications channel
