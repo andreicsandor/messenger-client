@@ -21,8 +21,6 @@ import {
   Button,
   Card,
   CardBody,
-  CardFooter,
-  CardLink,
   CardSubtitle,
   CardText,
   CardTitle,
