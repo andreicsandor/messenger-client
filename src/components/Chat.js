@@ -59,6 +59,14 @@ const ChatView = () => {
     return ids.join("_");
   };
 
+  const updateRoomStatus = async (roomId, user, status) => {
+    try {
+      await api.patch(`/api/rooms/${roomId}`, { user, status });
+    } catch (error) {
+      console.error("An error occurred while updating room status:", error);
+    }
+  };
+
   const fetchContacts = async () => {
     try {
       const user = Cookies.get("loggedInUser");
@@ -66,6 +74,21 @@ const ChatView = () => {
       const contacts = response.data.filter(
         (contact) => contact.username !== user
       );
+
+      for (let contact of contacts) {
+        const roomId = setRoomId(user, contact);
+        const roomResponse = await api.get(`/api/rooms/${roomId}`);
+        if (roomResponse.data) {
+          contact.room = roomResponse.data;
+
+          if (contact.room.userOne.username === user) {
+            contact.messages = contact.room.userOneStatus;
+          } else {
+            contact.messages = contact.room.userTwoStatus;
+          }
+        }
+      }
+
       setContacts(contacts);
     } catch (error) {
       console.error("An error occurred while fetching contacts:", error);
@@ -76,7 +99,6 @@ const ChatView = () => {
     try {
       const response = await api.get("/api/active-contacts");
       const activeContacts = response.data;
-      console.log(activeContacts);
       setActiveContacts(activeContacts);
     } catch (error) {
       console.error("An error occurred while fetching active contacts:", error);
@@ -106,6 +128,8 @@ const ChatView = () => {
     ) {
       setMessages((prevMessages) => [...prevMessages, responseData]);
     }
+
+    fetchContacts();
   };
 
   const onNotification = async (response) => {
@@ -133,6 +157,8 @@ const ChatView = () => {
         setNotification(true);
         setNotificationText(`${responseData.sender} ${responseData.content}`);
       }
+
+      fetchContacts();
     } else if (responseData.type === "PING") {
       // Open a full screen modal when the user receives a ping
       setPingModal(true);
@@ -187,6 +213,8 @@ const ChatView = () => {
       let roomId = setRoomId(user, chatContact);
       if (roomId !== null) {
         fetchMessages(roomId);
+        updateRoomStatus(roomId, user, "READ");
+        fetchContacts();
       }
       setInput((prevState) => ({
         ...prevState,
@@ -237,13 +265,16 @@ const ChatView = () => {
       // Send the notification to the server that sends it back to the corresponding user
       sendNotificationToServer(messageNotification);
 
-      // Generate roomId
+      // Generate roomId & toggle the notification dot for the recipient
       let roomId = setRoomId(user, chatContact);
+      updateRoomStatus(roomId, input.recipient, "UNREAD");
 
       setInput((prevState) => ({
         ...prevState,
         content: "", // Clear the content field
       }));
+
+      fetchContacts();
     }
   };
 
@@ -365,14 +396,16 @@ const ChatView = () => {
                                 }}
                               />
                             )}
-                            <NotificationIcon
-                              className="mx-1"
-                              style={{
-                                width: "8px",
-                                height: "8px",
-                                color: "red",
-                              }}
-                            />
+                            {contact.messages === "UNREAD" && (
+                              <NotificationIcon
+                                className="mx-1"
+                                style={{
+                                  width: "8px",
+                                  height: "8px",
+                                  color: "red",
+                                }}
+                              />
+                            )}
                           </CardTitle>
                         </div>
                       </Col>
