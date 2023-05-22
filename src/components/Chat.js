@@ -53,7 +53,7 @@ const ChatView = () => {
 
   const navigate = useNavigate();
 
-  const setChatId = (sender, receiver) => {
+  const setRoomId = (sender, receiver) => {
     let ids = [sender, receiver.username];
     ids.sort();
     return ids.join("_");
@@ -61,6 +61,7 @@ const ChatView = () => {
 
   const fetchContacts = async () => {
     try {
+      const user = Cookies.get("loggedInUser");
       const response = await api.get("/api/contacts");
       const contacts = response.data.filter(
         (contact) => contact.username !== user
@@ -75,15 +76,16 @@ const ChatView = () => {
     try {
       const response = await api.get("/api/active-contacts");
       const activeContacts = response.data;
+      console.log(activeContacts);
       setActiveContacts(activeContacts);
     } catch (error) {
       console.error("An error occurred while fetching active contacts:", error);
     }
   };
 
-  const fetchMessages = async (chatId) => {
+  const fetchMessages = async (roomId) => {
     try {
-      const response = await api.get(`/api/messages/conversation/${chatId}`);
+      const response = await api.get(`/api/messages/conversation/${roomId}`);
       setMessages(response.data);
     } catch (error) {
       console.error("An error occurred while fetching messages:", error);
@@ -112,15 +114,16 @@ const ChatView = () => {
     // Handle the online/offline type of notification
     if (responseData.type === "ONLINE") {
       // Add the user to the list of online users
-      if (!activeContacts.includes(responseData.sender)) {
-        setActiveContacts([...activeContacts, responseData.sender]);
-      }
+      setActiveContacts((prevActiveContacts) => [
+        ...prevActiveContacts,
+        responseData.sender,
+      ]);
       setNotification(true);
       setNotificationText(`${responseData.sender} ${responseData.content}`);
     } else if (responseData.type === "OFFLINE") {
       // Remove the user from the list of online users
-      setActiveContacts(
-        activeContacts.filter((user) => user !== responseData.sender)
+      setActiveContacts((prevActiveContacts) =>
+        prevActiveContacts.filter((user) => user !== responseData.sender)
       );
       setNotification(true);
       setNotificationText(`${responseData.sender} ${responseData.content}`);
@@ -181,9 +184,9 @@ const ChatView = () => {
   // Fetch and display the messages for a selected conversation
   useEffect(() => {
     if (chatContact !== null) {
-      let chatId = setChatId(user, chatContact);
-      if (chatId !== null) {
-        fetchMessages(chatId);
+      let roomId = setRoomId(user, chatContact);
+      if (roomId !== null) {
+        fetchMessages(roomId);
       }
       setInput((prevState) => ({
         ...prevState,
@@ -229,20 +232,18 @@ const ChatView = () => {
 
       // Send the message to the server that sends it back to the corresponding user
       sendMessageToServer(message);
+      setMessages((prevMessages) => [...prevMessages, message]);
 
       // Send the notification to the server that sends it back to the corresponding user
       sendNotificationToServer(messageNotification);
 
-      // Generate chatId
-      let chatId = setChatId(user, chatContact);
+      // Generate roomId
+      let roomId = setRoomId(user, chatContact);
 
       setInput((prevState) => ({
         ...prevState,
         content: "", // Clear the content field
       }));
-
-      // After sending the message, fetch the updated list of messages.
-      fetchMessages(chatId);
     }
   };
 
@@ -347,7 +348,6 @@ const ChatView = () => {
                       <Col xs="4" className="logo-container">
                         <div>
                           <CardTitle className="mb-1" tag="h6">
-                            
                             {activeContacts.includes(contact.username) ? (
                               <ActiveUserIcon
                                 style={{
