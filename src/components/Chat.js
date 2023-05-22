@@ -16,6 +16,7 @@ import "../static/styles.css";
 import { ReactComponent as ActiveUserIcon } from "../assets/images/chat-fill.svg";
 import { ReactComponent as UserIcon } from "../assets/images/moon-stars-fill.svg";
 import { ReactComponent as ChatIcon } from "../assets/images/chat-quote-fill.svg";
+import { ReactComponent as NotificationIcon } from "../assets/images/circle-fill.svg";
 import {
   Button,
   Card,
@@ -107,7 +108,7 @@ const ChatView = () => {
     }
   };
 
-  const onNotification = (response) => {
+  const onNotification = async (response) => {
     var responseData = JSON.parse(response.body);
 
     // Handle the online/offline type of notification
@@ -124,7 +125,7 @@ const ChatView = () => {
         activeContacts.filter((user) => user !== responseData.sender)
       );
       setNotification(true);
-      setNotificationText(`${responseData.sender} is offline.`);
+      setNotificationText(`${responseData.sender} ${responseData.content}`);
     } else if (responseData.type === "MESSAGE") {
       // Notify the user that they received a new message only if it's not from the active chat contact
       if (responseData.sender !== chatContactRef.current?.username) {
@@ -136,8 +137,6 @@ const ChatView = () => {
       setPingModal(true);
       setPingModalText(`${responseData.sender} has pinged you!`);
     }
-
-    fetchActiveContacts();
   };
 
   // Get the logged-in user details from cookies
@@ -263,8 +262,19 @@ const ChatView = () => {
   };
 
   const handleLeave = () => {
-    navigate('/logout');
+    // Prepare the notification data transfer object
+    const offlineNotification = new NotificationDTO("OFFLINE", user, "", "is offline.");
+    // Send the offline status notification to the server
+    sendNotificationToServer(offlineNotification);
+
+    setTimeout(() => {
+      navigate("/logout");
+    }, 1000);
   };
+
+  useEffect(() => {
+    console.log('activeContacts changed:', activeContacts);
+  }, [activeContacts]);
 
   return (
     <>
@@ -338,6 +348,14 @@ const ChatView = () => {
                       <Col xs="4" className="logo-container">
                         <div>
                           <CardTitle className="mb-1" tag="h6">
+                            {/* <NotificationIcon
+                              className="mx-3"
+                              style={{
+                                width: "10px",
+                                height: "10px",
+                                color: "red",
+                              }}
+                            /> */}
                             {activeContacts.includes(contact.username) ? (
                               <ActiveUserIcon
                                 style={{

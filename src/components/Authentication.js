@@ -136,21 +136,33 @@ const LoginView = () => {
 const LogoutView = () => {
   const navigate = useNavigate();
 
+  // Function to logout from the server
+  const logoutFromServer = async (username) => {
+    try {
+      const response = await api.post(`/api/logout?account=${username}`);
+      // Process response if necessary
+    } catch (error) {
+      console.error("Error during server logout:", error);
+    }
+  };
+
   useEffect(() => {
     const user = Cookies.get("loggedInUser");
 
     if (user) {
-      // Prepare the notification data transfer object
-      const offlineNotification = new NotificationDTO("OFFLINE", user, "", "is offline.");
-      // Send the offline status notification to the server
-      sendNotificationToServer(offlineNotification);
-      disconnectFromServer();
+      logoutFromServer(user).then(() => {
+        // Prepare the notification data transfer object
+        const offlineNotification = new NotificationDTO("OFFLINE", user, "", "is offline.");
+        // Send the offline status notification to the server
+        sendNotificationToServer(offlineNotification);
+        disconnectFromServer();
 
-      // Remove session cookies
-      Cookies.remove("loggedInUser");
+        // Remove session cookies
+        Cookies.remove("loggedInUser");
 
-      // Redirect to login page
-      navigate("/login");
+        // Redirect to login page
+        navigate("/login");
+      });
     } else {
       navigate("/login");
     }
@@ -158,5 +170,6 @@ const LogoutView = () => {
 
   return null;
 };
+
 
 export { LoginView, LogoutView };
