@@ -263,7 +263,7 @@ const ChatView = () => {
   };
 
   const handleLeave = () => {
-    
+    navigate('/logout');
   };
 
   return (
