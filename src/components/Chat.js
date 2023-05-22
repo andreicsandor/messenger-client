@@ -245,6 +245,16 @@ const ChatView = () => {
     setInput((prevState) => ({ ...prevState, [name]: value }));
   };
 
+  const handleInputClick = () => {
+    if (chatContact !== null) {
+      let roomId = setRoomId(user, chatContact);
+      if (roomId !== null) {
+        updateRoomStatus(roomId, user, "READ");
+      }
+      fetchContacts();
+    }
+  };
+
   const handleSend = () => {
     // Prepare the message data transfer object
     if (input.recipient !== "" && input.content !== "") {
@@ -524,6 +534,7 @@ const ChatView = () => {
                         name="content"
                         value={input.content}
                         onChange={handleInputChange}
+                        onClick={handleInputClick}
                         placeholder="Message"
                       />
                     </Col>
