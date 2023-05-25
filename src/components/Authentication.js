@@ -37,7 +37,7 @@ const LoginView = () => {
     const user = Cookies.get("loggedInUser");
 
     if (user)
-      navigate("/chats");
+      navigate("/chat");
 
   }, [navigate]);
 
